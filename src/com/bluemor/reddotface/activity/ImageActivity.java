@@ -123,6 +123,10 @@ public class ImageActivity extends Activity {
                             finish();
                         }
                     });
+                } else {
+                    Toast.makeText(getApplicationContext(), "保存失败",
+                            Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
                 }
             };
         }.start();

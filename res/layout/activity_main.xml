@@ -4,7 +4,6 @@
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="70dp"
@@ -54,7 +53,6 @@
     </RelativeLayout>
 
     <com.bluemor.reddotface.view.MyRelativeLayout
-        android:id="@+id/rl_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ffffff" >
