@@ -1,10 +1,10 @@
 DragLayout
 ==========
 
-###一个制作头像的Android Project.###
-###主界面仿QQ5.0主界面侧滑效果.###
-###使用新support.v4包下的ViewDragHelper实现.###
-###DragLayout类代码仅200行.###
+* 一个制作头像的Android Project
+* 主界面仿QQ5.0主界面侧滑效果
+* 使用新support.v4包下的ViewDragHelper实现
+* DragLayout类代码仅200行
 
 
 ## **How To Use** ##
@@ -44,7 +44,7 @@ sl.setDragListener(new DragListener() {
 });
 ```
 
-
+##Screenshots
 ![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/1.png)
 
 ![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/2.png)
