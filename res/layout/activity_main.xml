@@ -1,5 +1,5 @@
 <com.bluemor.reddotface.view.DragLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/sl_main"
+    android:id="@+id/dl"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 

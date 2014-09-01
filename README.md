@@ -10,7 +10,7 @@ DragLayout
 ## **How To Use** ##
 ```java
 <com.bluemor.reddotface.view.DragLayout
-    android:id="@+id/sl_main"
+    android:id="@+id/dl"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
     
@@ -27,8 +27,8 @@ DragLayout
 </com.bluemor.reddotface.view.DragLayout>
 
 
-DragLayout sl = (DragLayout) findViewById(R.id.sl_main);
-sl.setDragListener(new DragListener() {
+DragLayout dl = (DragLayout) findViewById(R.id.dl);
+dl.setDragListener(new DragListener() {
 	@Override
 	public void onOpen() {
 	}

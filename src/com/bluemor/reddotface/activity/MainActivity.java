@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bluemor.reddotface.R;
+import com.bluemor.reddotface.adapter.ImageAdapter;
 import com.bluemor.reddotface.util.Util;
 import com.bluemor.reddotface.view.DragLayout;
 import com.bluemor.reddotface.view.DragLayout.DragListener;
@@ -33,9 +34,9 @@ import java.util.Random;
 
 public class MainActivity extends Activity {
 
-    private DragLayout sl;
+    private DragLayout dl;
     private GridView gv_img;
-    private GalleryAdapter adapter;
+    private ImageAdapter adapter;
     private ListView lv;
     private TextView tv_noimg;
     private ImageView iv_icon, iv_bottom;
@@ -82,8 +83,8 @@ public class MainActivity extends Activity {
     }
 
     private void initDragLayout() {
-        sl = (DragLayout) findViewById(R.id.sl_main);
-        sl.setDragListener(new DragListener() {
+        dl = (DragLayout) findViewById(R.id.dl);
+        dl.setDragListener(new DragListener() {
             @Override
             public void onOpen() {
                 lv.smoothScrollToPosition(new Random().nextInt(15));
@@ -101,8 +102,8 @@ public class MainActivity extends Activity {
     }
 
     private void animate(float percent) {
-        ViewGroup vg_left = sl.getVg_left();
-        ViewGroup vg_main = sl.getVg_main();
+        ViewGroup vg_left = dl.getVg_left();
+        ViewGroup vg_main = dl.getVg_main();
 
         float wid = vg_left.getWidth();
 
@@ -119,7 +120,7 @@ public class MainActivity extends Activity {
         int color = (Integer) Util.evaluate(percent,
                 Color.parseColor("#000000"),
                 Color.parseColor("#009990"));
-        sl.setBackgroundColor(color);
+        dl.setBackgroundColor(color);
     }
 
     private void initView() {
@@ -128,7 +129,7 @@ public class MainActivity extends Activity {
         gv_img = (GridView) findViewById(R.id.gv_img);
         tv_noimg = (TextView) findViewById(R.id.iv_noimg);
         gv_img.setFastScrollEnabled(true);
-        adapter = new GalleryAdapter(this);
+        adapter = new ImageAdapter(this);
         gv_img.setAdapter(adapter);
         gv_img.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -152,7 +153,7 @@ public class MainActivity extends Activity {
         iv_icon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sl.open();
+                dl.open();
             }
         });
     }

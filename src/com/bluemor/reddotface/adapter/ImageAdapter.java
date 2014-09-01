@@ -1,4 +1,4 @@
-package com.bluemor.reddotface.activity;
+package com.bluemor.reddotface.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,12 +12,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
-public class GalleryAdapter extends BaseAdapter {
+public class ImageAdapter extends BaseAdapter {
 
     private LayoutInflater infalter;
     private ArrayList<String> paths = new ArrayList<String>();
 
-    public GalleryAdapter(Context context) {
+    public ImageAdapter(Context context) {
         infalter = LayoutInflater.from(context);
     }
 
@@ -46,7 +46,7 @@ public class GalleryAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
-            convertView = infalter.inflate(R.layout.gallery_item, null);
+            convertView = infalter.inflate(R.layout.item_image, null);
             holder = new ViewHolder();
             holder.iv_item = (ImageView) convertView.findViewById(R.id.iv_item);
             convertView.setTag(holder);
