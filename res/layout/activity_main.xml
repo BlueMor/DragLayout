@@ -1,14 +1,15 @@
 <com.bluemor.reddotface.view.DragLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dl"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@drawable/bg" >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="70dp"
+        android:paddingBottom="30dp"
         android:paddingLeft="30dp"
-        android:paddingTop="70dp" >
+        android:paddingTop="50dp" >
 
         <LinearLayout
             android:id="@+id/ll1"
@@ -47,15 +48,16 @@
             android:layout_height="wrap_content"
             android:layout_above="@id/tv_mail"
             android:layout_below="@id/ll1"
-            android:layout_marginBottom="15dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="20dp"
+            android:divider="@null"
             android:textColor="#ffffff" />
     </RelativeLayout>
 
     <com.bluemor.reddotface.view.MyRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff" >
+        android:background="#eeeeee" >
 
         <RelativeLayout
             android:id="@+id/rl_title"

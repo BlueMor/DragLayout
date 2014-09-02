@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -87,7 +88,7 @@ public class MainActivity extends Activity {
         dl.setDragListener(new DragListener() {
             @Override
             public void onOpen() {
-                lv.smoothScrollToPosition(new Random().nextInt(15));
+                lv.smoothScrollToPosition(new Random().nextInt(30));
             }
 
             @Override
@@ -118,9 +119,9 @@ public class MainActivity extends Activity {
         ViewHelper.setAlpha(iv_icon, 1f - percent);
 
         int color = (Integer) Util.evaluate(percent,
-                Color.parseColor("#000000"),
-                Color.parseColor("#009990"));
-        dl.setBackgroundColor(color);
+                Color.parseColor("#ff000000"),
+                Color.parseColor("#00000000"));
+        dl.getBackground().setColorFilter(color, Mode.SRC_OVER);
     }
 
     private void initView() {
@@ -143,8 +144,12 @@ public class MainActivity extends Activity {
         });
         lv = (ListView) findViewById(R.id.lv);
         lv.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-                android.R.layout.simple_list_item_1, new String[] {
+                R.layout.item_text, new String[] {
                         "NewBee",
+                        "ViCi Gaming", "Evil Geniuses", "Team DK",
+                        "Invictus Gaming", "LGD", "Natus Vincere",
+                        "Team Empire", "Alliance", "Cloud9", "Titan",
+                        "Mousesports", "Fnatic", "Team Liquid", "MVP Phoenix", "NewBee",
                         "ViCi Gaming", "Evil Geniuses", "Team DK",
                         "Invictus Gaming", "LGD", "Natus Vincere",
                         "Team Empire", "Alliance", "Cloud9", "Titan",
