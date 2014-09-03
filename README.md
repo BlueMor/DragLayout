@@ -6,7 +6,7 @@ DragLayout
 * 使用新support.v4包下的ViewDragHelper实现
 * DragLayout类代码仅200行
 
-相对于https://github.com/daimajia/AndroidSwipeLayout项目，优点有：
+相对于 https://github.com/daimajia/AndroidSwipeLayout 项目，优点有：
 * 左右滑动和上下滑动事件互不冲突（不会卡顿）
 * 子view（包括listview，gridview的item）的重新绘制不影响DragLayout的滑动（不会卡顿）
 
