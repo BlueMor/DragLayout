@@ -53,9 +53,7 @@ dl.setDragListener(new DragListener() {
 ```
 
 ##Screenshots
-![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/1.png)
-
 ![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/2.png)
 
-![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/3.png)
+![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/1.gif)
 
