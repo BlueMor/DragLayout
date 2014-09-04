@@ -1,6 +1,12 @@
 DragLayout
 ==========
 
+##Screenshots
+![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/1.gif)
+
+![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/2.png)
+
+
 * 一个制作头像的Android Project
 * 完全实现QQ5.0主界面侧滑效果
 * 使用新support.v4包下的ViewDragHelper实现
@@ -51,9 +57,4 @@ dl.setDragListener(new DragListener() {
 	}
 });
 ```
-
-##Screenshots
-![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/2.png)
-
-![image](https://github.com/BlueMor/DragLayout/blob/master/screenshots/1.gif)
 
