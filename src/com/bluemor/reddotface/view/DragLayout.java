@@ -14,12 +14,16 @@ import android.widget.RelativeLayout;
 
 public class DragLayout extends FrameLayout {
 
+    private static final float RANGE = 0.6f;
+
     private GestureDetector gestureDetector;
     private DragListener dragListener;
     private ViewDragHelper dragHelper;
 
     private int width;
     private int height;
+    private int range;
+    private int mainLeft;
 
     private RelativeLayout vg_left;
     private MyRelativeLayout vg_main;
@@ -53,7 +57,7 @@ public class DragLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionHorizontal(View child, int left, int dx) {
-            if (vg_main.getLeft() + dx < 0) {
+            if (mainLeft + dx < 0) {
                 return 0;
             } else {
                 return left;
@@ -78,10 +82,10 @@ public class DragLayout extends FrameLayout {
             } else if (xvel < 0) {
                 close();
             } else if (releasedChild == vg_main
-                    && vg_main.getLeft() > width / 3) {
+                    && mainLeft > range * 0.3) {
                 open();
             } else if (releasedChild == vg_left
-                    && vg_main.getLeft() > width * 2 / 3) {
+                    && mainLeft > range * 0.7) {
                 open();
             } else {
                 close();
@@ -91,18 +95,21 @@ public class DragLayout extends FrameLayout {
         @Override
         public void onViewPositionChanged(View changedView, int left, int top,
                 int dx, int dy) {
-            int mainLeft = vg_main.getLeft() + dx;
+            if (changedView == vg_main) {
+                mainLeft = left;
+            } else {
+                mainLeft = mainLeft + left;
+            }
             if (mainLeft < 0) {
                 mainLeft = 0;
+            } else if (mainLeft > range) {
+                mainLeft = range;
             }
-            if (mainLeft > width) {
-                mainLeft = width;
-            }
+            dispatchDragEvent(mainLeft);
             if (changedView == vg_left) {
                 vg_left.layout(0, 0, width, height);
                 vg_main.layout(mainLeft, 0, mainLeft + width, height);
             }
-            dispatchDragEvent(mainLeft);
         }
     };
 
@@ -135,24 +142,18 @@ public class DragLayout extends FrameLayout {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
         width = vg_left.getMeasuredWidth();
         height = vg_left.getMeasuredHeight();
+        range = (int) (width * RANGE);
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right,
             int bottom) {
-        if (getStatus() == Status.Drag) {
-            return;
-        }
-        super.onLayout(changed, left, top, right, bottom);
-        if (status == Status.Open) {
-            open(false);
-        } else {
-            close(false);
-        }
+        vg_left.layout(0, 0, width, height);
+        vg_main.layout(mainLeft, 0, mainLeft + width, height);
     }
 
     @Override
@@ -175,7 +176,7 @@ public class DragLayout extends FrameLayout {
         if (dragListener == null) {
             return;
         }
-        float percent = (float) mainLeft / (float) width;
+        float percent = mainLeft / (float) range;
         dragListener.onDrag(percent);
         Status lastStatus = status;
         if (lastStatus != getStatus() && status == Status.Close) {
@@ -189,7 +190,6 @@ public class DragLayout extends FrameLayout {
 
     @Override
     public void computeScroll() {
-        super.computeScroll();
         if (dragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this);
         }
@@ -203,7 +203,7 @@ public class DragLayout extends FrameLayout {
         int mainLeft = vg_main.getLeft();
         if (mainLeft == 0) {
             status = Status.Close;
-        } else if (mainLeft == width) {
+        } else if (mainLeft == range) {
             status = Status.Open;
         } else {
             status = Status.Drag;
@@ -217,12 +217,13 @@ public class DragLayout extends FrameLayout {
 
     public void open(boolean animate) {
         if (animate) {
-            dragHelper.smoothSlideViewTo(vg_main, width, 0);
+            if (dragHelper.smoothSlideViewTo(vg_main, range, 0)) {
+                ViewCompat.postInvalidateOnAnimation(this);
+            }
         } else {
-            vg_main.layout(width, 0, width * 2, height);
-            dispatchDragEvent(width);
+            vg_main.layout(range, 0, range * 2, height);
+            dispatchDragEvent(range);
         }
-        invalidate();
     }
 
     public void close() {
@@ -231,12 +232,13 @@ public class DragLayout extends FrameLayout {
 
     public void close(boolean animate) {
         if (animate) {
-            dragHelper.smoothSlideViewTo(vg_main, 0, 0);
+            if (dragHelper.smoothSlideViewTo(vg_main, 0, 0)) {
+                ViewCompat.postInvalidateOnAnimation(this);
+            }
         } else {
             vg_main.layout(0, 0, width, height);
             dispatchDragEvent(0);
         }
-        invalidate();
     }
 
 }

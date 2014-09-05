@@ -106,17 +106,15 @@ public class MainActivity extends Activity {
         ViewGroup vg_left = dl.getVg_left();
         ViewGroup vg_main = dl.getVg_main();
 
-        float wid = vg_left.getWidth();
-
-        ViewHelper.setTranslationX(vg_left, -wid / 2.2f + wid / 2.2f * percent);
+        float f1 = 1 - percent * 0.3f;
+        ViewHelper.setScaleX(vg_main, f1);
+        ViewHelper.setScaleY(vg_main, f1);
+        ViewHelper.setTranslationX(vg_left, -vg_left.getWidth() / 2.2f
+                + vg_left.getWidth() / 2.2f * percent);
         ViewHelper.setScaleX(vg_left, 0.5f + 0.5f * percent);
         ViewHelper.setScaleY(vg_left, 0.5f + 0.5f * percent);
         ViewHelper.setAlpha(vg_left, percent);
-
-        ViewHelper.setTranslationX(vg_main, -wid / 2.5f * percent);
-        ViewHelper.setScaleX(vg_main, 1f - percent * 0.25f);
-        ViewHelper.setScaleY(vg_main, 1f - percent * 0.25f);
-        ViewHelper.setAlpha(iv_icon, 1f - percent);
+        ViewHelper.setAlpha(iv_icon, 1 - percent);
 
         int color = (Integer) Util.evaluate(percent,
                 Color.parseColor("#ff000000"),
