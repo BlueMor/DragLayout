@@ -1,5 +1,12 @@
 package com.bluemor.reddotface.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,15 +21,30 @@ import android.provider.MediaStore;
 import android.view.View;
 
 import com.bluemor.reddotface.R;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class Util {
+	
+	public static void initImageLoader(Context context) {
+		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+				.showImageOnLoading(R.drawable.default_face)
+				.showImageForEmptyUri(R.drawable.default_face)
+				.showImageOnFail(R.drawable.default_face).cacheInMemory(true)
+				.considerExifParams(true)
+				.displayer(new FadeInBitmapDisplayer(300, true, true, true))
+				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+				.bitmapConfig(Bitmap.Config.RGB_565).build();
+		ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(
+				context).defaultDisplayImageOptions(defaultOptions).memoryCache(
+				new WeakMemoryCache());
+		ImageLoaderConfiguration config = builder.build();
+		ImageLoader.getInstance().init(config);
+	}
 
     @SuppressWarnings("deprecation")
     public static ArrayList<String> getGalleryPhotos(Activity act) {

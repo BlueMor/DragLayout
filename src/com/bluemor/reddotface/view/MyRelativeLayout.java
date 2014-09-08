@@ -23,7 +23,6 @@ public class MyRelativeLayout extends RelativeLayout {
     }
 
     public void setDragLayout(DragLayout dl) {
-        setClickable(true);
         this.dl = dl;
     }
 
