@@ -4,12 +4,9 @@ import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,10 +15,11 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bluemor.reddotface.R;
 import com.bluemor.reddotface.adapter.ImageAdapter;
+import com.bluemor.reddotface.util.Callback;
+import com.bluemor.reddotface.util.Invoker;
 import com.bluemor.reddotface.util.Util;
 import com.bluemor.reddotface.view.DragLayout;
 import com.bluemor.reddotface.view.DragLayout.DragListener;
@@ -56,32 +54,14 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClose() {
+				shake();
 			}
 
 			@Override
 			public void onDrag(float percent) {
-				animate(percent);
+				ViewHelper.setAlpha(iv_icon, 1 - percent);
 			}
 		});
-	}
-
-	private void animate(float percent) {
-		ViewGroup vg_left = dl.getVg_left();
-		ViewGroup vg_main = dl.getVg_main();
-
-		float f1 = 1 - percent * 0.3f;
-		ViewHelper.setScaleX(vg_main, f1);
-		ViewHelper.setScaleY(vg_main, f1);
-		ViewHelper.setTranslationX(vg_left, -vg_left.getWidth() / 2.2f
-				+ vg_left.getWidth() / 2.2f * percent);
-		ViewHelper.setScaleX(vg_left, 0.5f + 0.5f * percent);
-		ViewHelper.setScaleY(vg_left, 0.5f + 0.5f * percent);
-		ViewHelper.setAlpha(vg_left, percent);
-		ViewHelper.setAlpha(iv_icon, 1 - percent);
-
-		int color = (Integer) Util.evaluate(percent,
-				Color.parseColor("#ff000000"), Color.parseColor("#00000000"));
-		dl.getBackground().setColorFilter(color, Mode.SRC_OVER);
 	}
 
 	private void initView() {
@@ -117,8 +97,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				Toast.makeText(getApplicationContext(), "click " + position,
-						Toast.LENGTH_LONG).show();
+				Util.t(getApplicationContext(), "click " + position);
 			}
 		});
 		iv_icon.setOnClickListener(new OnClickListener() {
@@ -136,15 +115,36 @@ public class MainActivity extends Activity {
 	}
 
 	private void loadImage() {
-		adapter.addAll(Util.getGalleryPhotos(this));
-		if (adapter.isEmpty()) {
-			tv_noimg.setVisibility(View.VISIBLE);
-		} else {
-			tv_noimg.setVisibility(View.GONE);
-			String s = "file://" + adapter.getItem(0);
-			ImageLoader.getInstance().displayImage(s, iv_icon);
-			ImageLoader.getInstance().displayImage(s, iv_bottom);
-		}
+		new Invoker(new Callback() {
+			@Override
+			public boolean onRun() {
+				adapter.addAll(Util.getGalleryPhotos(MainActivity.this));
+				return adapter.isEmpty();
+			}
+
+			@Override
+			public void onBefore() {
+				// 转菊花
+			}
+
+			@Override
+			public void onAfter(boolean b) {
+				adapter.notifyDataSetChanged();
+				if (b) {
+					tv_noimg.setVisibility(View.VISIBLE);
+				} else {
+					tv_noimg.setVisibility(View.GONE);
+					String s = "file://" + adapter.getItem(0);
+					ImageLoader.getInstance().displayImage(s, iv_icon);
+					ImageLoader.getInstance().displayImage(s, iv_bottom);
+				}
+				shake();
+			}
+		}).start();
+
+	}
+
+	private void shake() {
 		iv_icon.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake));
 	}
 

@@ -1,6 +1,8 @@
 package com.bluemor.reddotface.view;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
@@ -10,11 +12,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import com.bluemor.reddotface.R;
+import com.nineoldandroids.view.ViewHelper;
 
 public class DragLayout extends FrameLayout {
 
-	private static final float RANGE = 0.6f;
+	private boolean isShowShadow = true;
 
 	private GestureDetectorCompat gestureDetector;
 	private DragListener dragListener;
@@ -25,6 +31,7 @@ public class DragLayout extends FrameLayout {
 	private int range;
 	private int mainLeft;
 
+	private ImageView iv_shadow;
 	private RelativeLayout vg_left;
 	private MyRelativeLayout vg_main;
 
@@ -43,13 +50,20 @@ public class DragLayout extends FrameLayout {
 		gestureDetector = new GestureDetectorCompat(context,
 				new YScrollDetector());
 		dragHelper = ViewDragHelper.create(this, dragHelperCallback);
+		if (isShowShadow) {
+			iv_shadow = new ImageView(context);
+			iv_shadow.setImageResource(R.drawable.shadow);
+			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,
+					LayoutParams.MATCH_PARENT);
+			addView(iv_shadow, 0, lp);
+		}
 	}
 
 	class YScrollDetector extends SimpleOnGestureListener {
 		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
-			return Math.abs(distanceY) <= Math.abs(distanceX);
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float dx,
+				float dy) {
+			return Math.abs(dy) <= Math.abs(dx);
 		}
 	}
 
@@ -105,11 +119,16 @@ public class DragLayout extends FrameLayout {
 			} else if (mainLeft > range) {
 				mainLeft = range;
 			}
-			dispatchDragEvent(mainLeft);
+
+			if (isShowShadow) {
+				iv_shadow.layout(mainLeft, 0, mainLeft + width, height);
+			}
 			if (changedView == vg_left) {
 				vg_left.layout(0, 0, width, height);
 				vg_main.layout(mainLeft, 0, mainLeft + width, height);
 			}
+
+			dispatchDragEvent(mainLeft);
 		}
 	};
 
@@ -128,8 +147,8 @@ public class DragLayout extends FrameLayout {
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
-		vg_left = (RelativeLayout) getChildAt(0);
-		vg_main = (MyRelativeLayout) getChildAt(1);
+		vg_left = (RelativeLayout) getChildAt(isShowShadow ? 1 : 0);
+		vg_main = (MyRelativeLayout) getChildAt(isShowShadow ? 2 : 1);
 		vg_main.setDragLayout(this);
 		vg_left.setClickable(true);
 		vg_main.setClickable(true);
@@ -148,7 +167,7 @@ public class DragLayout extends FrameLayout {
 		super.onSizeChanged(w, h, oldw, oldh);
 		width = vg_left.getMeasuredWidth();
 		height = vg_left.getMeasuredHeight();
-		range = (int) (width * RANGE);
+		range = (int) (width * 0.6f);
 	}
 
 	@Override
@@ -179,15 +198,49 @@ public class DragLayout extends FrameLayout {
 			return;
 		}
 		float percent = mainLeft / (float) range;
+		animateView(percent);
 		dragListener.onDrag(percent);
 		Status lastStatus = status;
 		if (lastStatus != getStatus() && status == Status.Close) {
-			vg_left.setEnabled(false);
 			dragListener.onClose();
 		} else if (lastStatus != getStatus() && status == Status.Open) {
-			vg_left.setEnabled(true);
 			dragListener.onOpen();
 		}
+	}
+
+	private void animateView(float percent) {
+		float f1 = 1 - percent * 0.3f;
+		ViewHelper.setScaleX(vg_main, f1);
+		ViewHelper.setScaleY(vg_main, f1);
+		ViewHelper.setTranslationX(vg_left, -vg_left.getWidth() / 2.2f
+				+ vg_left.getWidth() / 2.2f * percent);
+		ViewHelper.setScaleX(vg_left, 0.5f + 0.5f * percent);
+		ViewHelper.setScaleY(vg_left, 0.5f + 0.5f * percent);
+		ViewHelper.setAlpha(vg_left, percent);
+		if (isShowShadow) {
+			ViewHelper.setScaleX(iv_shadow, f1 * 1.5f * (1 - percent * 0.2f));
+			ViewHelper.setScaleY(iv_shadow, f1 * 2.0f * (1 - percent * 0.2f));
+		}
+		getBackground().setColorFilter(
+				evaluate(percent, Color.BLACK, Color.TRANSPARENT),
+				Mode.SRC_OVER);
+	}
+
+	private Integer evaluate(float fraction, Object startValue, Integer endValue) {
+		int startInt = (Integer) startValue;
+		int startA = (startInt >> 24) & 0xff;
+		int startR = (startInt >> 16) & 0xff;
+		int startG = (startInt >> 8) & 0xff;
+		int startB = startInt & 0xff;
+		int endInt = (Integer) endValue;
+		int endA = (endInt >> 24) & 0xff;
+		int endR = (endInt >> 16) & 0xff;
+		int endG = (endInt >> 8) & 0xff;
+		int endB = endInt & 0xff;
+		return (int) ((startA + (int) (fraction * (endA - startA))) << 24)
+				| (int) ((startR + (int) (fraction * (endR - startR))) << 16)
+				| (int) ((startG + (int) (fraction * (endG - startG))) << 8)
+				| (int) ((startB + (int) (fraction * (endB - startB))));
 	}
 
 	@Override
@@ -202,7 +255,6 @@ public class DragLayout extends FrameLayout {
 	}
 
 	public Status getStatus() {
-		int mainLeft = vg_main.getLeft();
 		if (mainLeft == 0) {
 			status = Status.Close;
 		} else if (mainLeft == range) {

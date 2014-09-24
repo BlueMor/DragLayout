@@ -39,7 +39,6 @@ public class ImageAdapter extends BaseAdapter {
     public void addAll(ArrayList<String> paths) {
         this.paths.clear();
         this.paths.addAll(paths);
-        notifyDataSetChanged();
     }
 
     @Override

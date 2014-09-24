@@ -7,15 +7,17 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bluemor.reddotface.R;
+import com.bluemor.reddotface.util.Callback;
+import com.bluemor.reddotface.util.Invoker;
 import com.bluemor.reddotface.util.Util;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -33,6 +35,20 @@ public class ImageActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_image);
+		initView();
+		iv.getViewTreeObserver().addOnGlobalLayoutListener(
+				new OnGlobalLayoutListener() {
+					@SuppressWarnings("deprecation")
+					@Override
+					public void onGlobalLayout() {
+						iv.getLayoutParams().height = iv.getWidth();
+						iv.getViewTreeObserver().removeGlobalOnLayoutListener(
+								this);
+					}
+				});
+	}
+
+	private void initView() {
 		path = getIntent().getStringExtra("path");
 		rl = (RelativeLayout) findViewById(R.id.rl);
 		iv = (ImageView) findViewById(R.id.iv);
@@ -41,7 +57,6 @@ public class ImageActivity extends Activity {
 		sb1 = (SeekBar) findViewById(R.id.sb1);
 		sb2 = (SeekBar) findViewById(R.id.sb2);
 		ImageLoader.getInstance().displayImage("file://" + path, iv);
-
 		sb1.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
 			@Override
@@ -80,7 +95,6 @@ public class ImageActivity extends Activity {
 				tv.setTextSize(30 + progress);
 			}
 		});
-
 		et.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
@@ -101,39 +115,37 @@ public class ImageActivity extends Activity {
 		});
 	}
 
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		iv.getLayoutParams().height = iv.getWidth();
-	}
+	private Bitmap bmp;
 
 	public void onSave(View v) {
-		pd = new ProgressDialog(this);
-		pd.setCancelable(false);
-		pd.show();
-		final Bitmap bmp = Util.convertViewToBitmap(rl);
-		new Thread() {
-			public void run() {
-				afterSave(Util.saveImageToGallery(getApplicationContext(), bmp,
-						path.endsWith(".png")));
-			};
-		}.start();
-	}
+		new Invoker(new Callback() {
+			@Override
+			public boolean onRun() {
+				return Util.saveImageToGallery(getApplicationContext(), bmp,
+						path.endsWith(".png"));
+			}
 
-	private void afterSave(final boolean isOk) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				if (isOk) {
-					Toast.makeText(getApplicationContext(), "保存成功",
-							Toast.LENGTH_LONG).show();
+			@Override
+			public void onBefore() {
+				pd = new ProgressDialog(ImageActivity.this);
+				pd.setCancelable(false);
+				pd.show();
+				bmp = Util.convertViewToBitmap(rl);
+			}
+
+			@Override
+			public void onAfter(boolean b) {
+				if (b) {
+					Util.t(getApplicationContext(), "保存成功");
 					pd.dismiss();
 					finish();
 				} else {
-					Toast.makeText(getApplicationContext(), "保存失败",
-							Toast.LENGTH_LONG).show();
+					Util.t(getApplicationContext(), "保存失败");
 					pd.dismiss();
 				}
 			}
-		});
+		}).start();
+
 	}
+
 }
